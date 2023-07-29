@@ -1,28 +1,20 @@
-import Jwt  from "jsonwebtoken";
+import jwt from "jsonwebtoken";
 
-const auth =async(req,res,next)=>{
+const secret = "test";
 
-    try {
-        console.log('Testing token')
-        const token=req.headers.authorization.split(' ')[1];
-        console.log(token);
-        const isCustomAuth=token.includes('.com');
-        console.log(isCustomAuth);
-        if(token && !isCustomAuth){
-            console.log('testing the token using jwt')
-            let decodedData=Jwt.verify(token,'test');
-            console.log(decodedData)
-            req.userId=decodedData?.id;
-        }
-        else{
-            console.log('auth google user')
-            req.userId=token;
-        }
+const auth = async (req, res, next) => {
+  try {
+    const token = req.headers.authorization.split(" ")[1];
+    let decodedData;
 
-        console.log('Auth verified')
-        next();
-    } catch (error) {
-        console.log(error);
-    }
-}
+    decodedData = jwt.decode(token);
+
+    req.userId = decodedData?.sub;
+
+    next();
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 export default auth;
